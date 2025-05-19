@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Pengumpulan Tugas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    input, button {
+      padding: 12px;
+      width: 90%;
+      margin: 10px auto;
+      border-radius: 30px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      display: block;
+    }
+
+    button {
+      background-color: black;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #444;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Form Pengumpulan Tugas Tipografi Aplikatif</h1>
+    <form name="submit-to-google-sheet">
+      <input type="text" name="nama" placeholder="Nama Lengkap" required>
+      <input type="text" name="nim" placeholder="NIM" required>
+      <input type="url" name="link" placeholder="Link Tugas (Drive, Behance, dll)" required>
+      <button type="submit">Kirim Tugas</button>
+    </form>
+    <p id="status"></p>
+  </div>
+
+  <script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzdQ9Ho2POWsWGQXJRrxa91Ks7HAaCAF2UOvzMAKvVibZn7Si1J0qI3pj6D8XNJDICj/exec';
+    const form = document.forms['submit-to-google-sheet'];
+    const statusText = document.getElementById('status');
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      statusText.innerText = '⏳ Mengirim...';
+      fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+        .then(res => res.json())
+        .then(response => {
+          if (response.result === 'success') {
+            statusText.innerText = '✅ Tugas berhasil dikirim!';
+            form.reset();
+          } else {
+            statusText.innerText = '❌ Gagal mengirim: ' + response.message;
+          }
+        })
+        .catch(error => {
+          statusText.innerText = '❌ Gagal mengirim. Periksa koneksi/script.';
+          console.error('Error!', error.message);
+        });
+    });
+  </script>
+</body>
+</html>
